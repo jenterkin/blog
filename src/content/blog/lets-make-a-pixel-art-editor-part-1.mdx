@@ -1,0 +1,75 @@
+---
+title: "Let's make a Pixel Art Editor, Part 1: Why?"
+description: Making a pixel art editor in Godot
+heroImage: /blog-placeholder-1.jpg
+pubDate: Nov 12, 2023
+---
+import PixelImage from "../../components/PixelImage.astro"
+export const images = "/images/first-post"
+
+I've always had a particular interest in games that have deep procedural generation and simulation systems. If you've played [Dwarf Fortress](https://www.bay12games.com/dwarves/), [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/), or [Project Zomboid](https://projectzomboid.com/), then you know exectly what I'm talking about. If you haven't you should absolutely check them out. These games have far more lore than any semblance of play, but [you build your own stories through the games' in-depth systems](https://dfstories.com/).
+
+The first procedural generation system I am going to start with is character generation. I want to be able to customize every bit of a character from the skin tone to bionic body parts, from the socks they're wearing under their shoes, to the scars and tatoos on their backs. I also need to cut down on how long it will take to generate assets (and also to cater to my... less than stellar artistic abilities) since I'll likely have countless assets, so I'm going to go with 2D pixel art.
+
+So how am I going to create such a flexible system where I can just mix and match body parts, clothes, colors, etc? How will they all be animated to blend well with each other? Well I'm going to try a mixture of mapping textures onto sprite animations and composing sprites from smaller sprites. Okay yeah, but what does that mean?
+
+# Mapping Textures onto Animations
+I stole this idea from some other [smart](https://www.youtube.com/watch?v=HsOKwUwL1bE) [people](https://old.reddit.com/r/proceduralgeneration/comments/ibybmg/uvmapping_pixel_art_for_effortless_content/) when I was searching how to map pixel art onto 2D animations. The solution is actuall pretty simple.
+
+First, create a reference image. I made a cute slime.
+
+<PixelImage src="/images/first-post/slime.png" />
+
+Next we need to create a UV map. The UV map is essentially a separate image where each pixel represents it's own `x, y` coordinates in it's RGB value where `R` is it's `x` value, `G` the `y` value, and `B` doesn't matter.
+
+For instance, the pixel at `0, 0` will have an `R` value of `0` and a `G` value of `0`. The pixel at `1, 0` will have an `R` value of `1`, a `g` value of `0`, and so on. The following is some GDScript that will generate the UV map and attach it to a `TextureRect`.
+
+```gdscript
+extends TextureRect
+
+@export var dimensions = Vector2i(16, 16)
+
+func _ready():
+	var image = Image.create(
+		self.dimensions.x,
+		self.dimensions.y,
+		false,
+		Image.FORMAT_RGB8)
+
+	for y in range(self.dimensions.y):
+		for x in range(self.dimensions.x):
+			image.set_pixel(x, y, Color8(x, y, 0))
+
+	self.texture = ImageTexture.create_from_image(image)
+```
+
+After we have the UV map, we can erase all of the pixels in the locations that the reference image doesn't have pixels (or more accurately, has transparent pixels). This will result in something that looks like your reference image, just very... dark. For instance, this is the UV map for my slime:
+
+<PixelImage src="/images/first-post/slime-uv-map.png" />
+
+Now that you have the UV map, let's put it all together. Remember that each pixel in the UV map has an RGB value that represents it's `x, y` coordinates? Well now we can use that information to look up the colors we _actually_ want on the texture images. Using these pixels you can make an animation that looks something like this:
+
+<PixelImage src="/images/first-post/uv-animation.png" />
+
+and map on different skins to the same animation! Here's an example of the original reference image and a new texture I created mapped onto the above animation frames, thanks to some hastily put-together GDScript I wrote:
+
+<PixelImage src="/images/first-post/processed-animation.gif" />
+
+
+So that's the idea! You can have one animation per texture shape, meaning that I can make on animation for say, a shirt, create texture for a hundred shirts, and map them all onto the same animation.
+
+# Composite Sprites
+
+This concept is much simpler. Basically instead of modelling a character you model a leg, a torso, a head, an arm, etc, and combine those into one sprite. This allows us to use the texture mapping method above to create any number of variations of anything a character could be comprised of, and combined into one coherent sprite.
+
+# So what's this about creating a pixel art editor?
+Well... This whole process kind of sucks. Creating those animations based on the UV maps is _really_ tedious. I don't know about you, but I have a hard time discerning slightly different shades of black from each other. By creating an editor we could vastly improve the asset generation process by
+- Creating an additional map _on top_ of the UV map so that we could create animations using the reference image and have that translate to the UV map for the engine to consume.
+- Create a view where you can see real-time updates of a component sprite combined with other component sprites to get a holistic view while you're creating assets.
+- Export component sprites so that they can be directly imported by a game engine.
+
+Also it sounds fun. Leave me alone.
+
+I'll be documenting my ill-advised journey into creating an over-engineered asset generation tool mostly to solidify my own learning, but all the better if you want to join me.
+
+There's a lot to be done before the features around texture mapping and composite sprites can happen -- we need to create a fully-featured pixel art editor first! Next up we'll dive right in by creating the basic structure of our pixel art editor starting with the menu bar, tool bar, and canvas area.
