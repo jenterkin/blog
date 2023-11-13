@@ -7,14 +7,14 @@ pubDate: Nov 12, 2023
 ---
 import PixelImage from "../../components/PixelImage.astro"
 
-I've always had a particular interest in games that have deep procedural generation and simulation systems. If you've played [Dwarf Fortress](https://www.bay12games.com/dwarves/), [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/), or [Project Zomboid](https://projectzomboid.com/), then you know exectly what I'm talking about. If you haven't you should absolutely check them out. These games have far more lore than any semblance of play, but [you build your own stories through the games' in-depth systems](https://dfstories.com/).
+I've always had a particular interest in games that have deep procedural generation and simulation systems. If you've played [Dwarf Fortress](https://www.bay12games.com/dwarves/), [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/), or [Project Zomboid](https://projectzomboid.com/), then you know exactly what I'm talking about. If you haven't you should absolutely check them out. These games have far more lore than any semblance of play, but [you build your own stories through the games' in-depth systems](https://dfstories.com/).
 
-The first procedural generation system I am going to start with is character generation. I want to be able to customize every bit of a character from the skin tone to bionic body parts, from the socks they're wearing under their shoes, to the scars and tatoos on their backs. I also need to cut down on how long it will take to generate assets (and also to cater to my... less than stellar artistic abilities) since I'll likely have countless assets, so I'm going to go with 2D pixel art.
+The first procedural generation system I am going to start with is character generation. I want to be able to customize every bit of a character from the skin tone to bionic body parts, from the socks they're wearing under their shoes, to the scars and tattoos on their backs. I also need to cut down on how long it will take to generate assets (and also to cater to my... less than stellar artistic abilities) since I'll likely have countless assets, so I'm going to go with 2D pixel art.
 
 So how am I going to create such a flexible system where I can just mix and match body parts, clothes, colors, etc? How will they all be animated to blend well with each other? Well I'm going to try a mixture of mapping textures onto sprite animations and composing sprites from smaller sprites. Okay yeah, but what does that mean?
 
 # Mapping Textures onto Animations
-I stole this idea from some other [smart](https://www.youtube.com/watch?v=HsOKwUwL1bE) [people](https://old.reddit.com/r/proceduralgeneration/comments/ibybmg/uvmapping_pixel_art_for_effortless_content/) when I was searching how to map pixel art onto 2D animations. The solution is actuall pretty simple.
+I stole this idea from some other [smart](https://www.youtube.com/watch?v=HsOKwUwL1bE) [people](https://old.reddit.com/r/proceduralgeneration/comments/ibybmg/uvmapping_pixel_art_for_effortless_content/) when I was searching how to map pixel art onto 2D animations. The solution is actually pretty simple.
 
 First, create a reference image. I made a cute slime.
 
@@ -60,7 +60,7 @@ So that's the idea! You can have one animation per texture shape, meaning that I
 
 # Composite Sprites
 
-This concept is much simpler. Basically instead of modelling a character you model a leg, a torso, a head, an arm, etc, and combine those into one sprite. This allows us to use the texture mapping method above to create any number of variations of anything a character could be comprised of, and combined into one coherent sprite.
+This concept is much simpler. Basically instead of modeling a character you model a leg, a torso, a head, an arm, etc, and combine those into one sprite. This allows us to use the texture mapping method above to create any number of variations of anything a character could be comprised of, and combined into one coherent sprite.
 
 # So what's this about creating a pixel art editor?
 Well... This whole process kind of sucks. Creating those animations based on the UV maps is _really_ tedious. I don't know about you, but I have a hard time discerning slightly different shades of black from each other. By creating an editor we could vastly improve the asset generation process by
